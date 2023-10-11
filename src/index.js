@@ -11,20 +11,18 @@ const getArtistUrl = async (params) => {
   let artistUrl = new Promise((resolve, reject) => {
     bandcamp.search(params, async function (error, searchResults) {
       if (error) {
-        console.log("ERROR IN getArtistUrl", error);
+        console.log("ERROR: ", error);
       } else {
         const artistUrl = await searchResults
           .filter((result) => result.type === "artist")
           .filter((result) =>
             result.name.toLowerCase().includes(params.query.toLowerCase())
-          )
-          // .map((result) => result.url)[0];
+          );
 
         resolve(artistUrl);
       }
     });
   });
-  console.log("ARTIST URL", await artistUrl);
   return await artistUrl;
 };
 
@@ -34,14 +32,13 @@ const getAlbumsUrls = async (artistUrl) => {
       artistUrl,
       async function (error, albumUrls) {
         if (error) {
-          console.log("ERROR IN getAlbumsUrls", error);
+          console.log("ERROR: ", error);
         } else {
           resolve(albumUrls);
         }
       }
     );
   });
-  console.log("ALBUMS URLS", await albumsUrls);
   return await albumsUrls;
 };
 
@@ -120,6 +117,18 @@ app.get("/artist", async (request, response) => {
   }
 
   response.send(responseArray);
+});
+
+app.get("/albums", async (request, response) => {
+  response.send("albums");
+  console.log("query", request.query);
+
+  try {
+    const responseArray = await getAlbumsUrls(request.query.artistUrl);
+    response.send(responseArray);
+  } catch (error) {
+    console.log("Error: ", error);
+  }
 });
 
 app.listen(PORT, () => console.log(`Server Running on PORT ${PORT}`));
