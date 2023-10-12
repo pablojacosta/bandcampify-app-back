@@ -8,38 +8,38 @@ const app = express();
 app.use(cors());
 
 const getArtistUrl = async (params) => {
-  let artistUrl = new Promise((resolve, reject) => {
+  const artistUrl = new Promise((resolve, reject) => {
     bandcamp.search(params, async function (error, searchResults) {
       if (error) {
-        console.log("ERROR: ", error);
+        console.log("getArtistUrl ERROR: ", error);
       } else {
-        const artistUrl = await searchResults
+        const artistResponse = await searchResults
           .filter((result) => result.type === "artist")
           .filter((result) =>
             result.name.toLowerCase().includes(params.query.toLowerCase())
           );
 
-        resolve(artistUrl);
+        resolve(artistResponse);
       }
     });
   });
-  return await artistUrl;
+  return artistUrl;
 };
 
 const getAlbumsUrls = async (artistUrl) => {
-  let albumsUrls = new Promise((resolve, reject) => {
+  const albumsUrls = new Promise((resolve, reject) => {
     const albumsUrls = bandcamp.getAlbumUrls(
       artistUrl,
       async function (error, albumUrls) {
         if (error) {
-          console.log("ERROR: ", error);
+          console.log("getAlbumsUrls ERROR: ", error);
         } else {
           resolve(albumUrls);
         }
       }
     );
   });
-  return await albumsUrls;
+  return albumsUrls;
 };
 
 const getOneAlbumData = async (album) => {
@@ -100,10 +100,6 @@ const getAllAlbumsDataArray = async (params) => {
   return allAlbumsDataArray;
 };
 
-app.get("/", async (request, response) => {
-  response.send("hello");
-});
-
 app.get("/artist", async (request, response) => {
   const params = {
     query: request.query.artist,
@@ -120,14 +116,12 @@ app.get("/artist", async (request, response) => {
 });
 
 app.get("/albums", async (request, response) => {
-  response.send("albums");
-  console.log("query", request.query);
-
   try {
     const responseArray = await getAlbumsUrls(request.query.artistUrl);
-    response.send(responseArray);
+    const allAlbumsDataArray = await getAllAlbumsData(responseArray);
+    response.send(allAlbumsDataArray);
   } catch (error) {
-    console.log("Error: ", error);
+    console.log("Error in albums endpoint: ", error);
   }
 });
 
