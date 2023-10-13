@@ -46,12 +46,12 @@ const getOneAlbumData = async (album) => {
   const albumData = new Promise((resolve, reject) => {
     bandcamp.getAlbumProducts(album, async function (error, albumProducts) {
       if (error) {
-        console.log("ERROR IN getOneAlbumData", error);
+        console.log("ERROR: ", error);
       } else {
         const albumAllInfo = await new Promise((resolve, reject) => {
           bandcamp.getAlbumInfo(album, function (error, albumInfo) {
             if (error) {
-              console.log("ERROR IN ALBUM ID AND ARTIST", error);
+              console.log("ERROR: ", error);
             } else {
               resolve({
                 id: albumInfo.raw.current.id,
@@ -75,28 +75,13 @@ const getOneAlbumData = async (album) => {
       }
     });
   });
-  console.log("ONE ALBUM DATA", await albumData);
-  return await albumData;
+  return albumData;
 };
 
 const getAllAlbumsData = async (albumsUrls) => {
   const allAlbumsDataArray = await Promise.all(
     albumsUrls.map((album) => getOneAlbumData(album))
   );
-  console.log("allAlbumsDataArray", allAlbumsDataArray);
-  return allAlbumsDataArray;
-};
-
-const getAllAlbumsDataArray = async (params) => {
-  const artistUrl = await getArtistUrl(params);
-
-  if (artistUrl === undefined) {
-    return;
-  }
-
-  const albumsUrls = await getAlbumsUrls(artistUrl);
-  const allAlbumsDataArray = await getAllAlbumsData(albumsUrls);
-
   return allAlbumsDataArray;
 };
 
@@ -121,7 +106,7 @@ app.get("/albums", async (request, response) => {
     const allAlbumsDataArray = await getAllAlbumsData(responseArray);
     response.send(allAlbumsDataArray);
   } catch (error) {
-    console.log("Error in albums endpoint: ", error);
+    console.log("Error :", error);
   }
 });
 
