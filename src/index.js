@@ -1,6 +1,7 @@
 const bandcamp = require("bandcamp-scraper");
 const express = require("express");
 const cors = require("cors");
+const bcfetch = require("bandcamp-fetch");
 
 const PORT = 3001;
 
@@ -28,53 +29,61 @@ const getArtistUrl = async (params) => {
 
 const getAlbumsUrls = async (artistUrl) => {
   const albumsUrls = new Promise((resolve, reject) => {
-    const albumsUrls = bandcamp.getAlbumUrls(
-      artistUrl,
-      async function (error, albumUrls) {
-        if (error) {
-          console.log("getAlbumsUrls ERROR: ", error);
-        } else {
-          resolve(albumUrls);
-        }
+    bandcamp.getAlbumUrls(artistUrl, async function (error, albumUrls) {
+      if (error) {
+        console.log("getAlbumsUrls ERROR: ", error);
+      } else {
+        resolve(albumUrls);
       }
-    );
+    });
   });
   return albumsUrls;
 };
 
-const getOneAlbumData = async (album) => {
-  const albumData = new Promise((resolve, reject) => {
-    bandcamp.getAlbumProducts(album, async function (error, albumProducts) {
-      if (error) {
-        console.log("ERROR: ", error);
-      } else {
-        const albumAllInfo = await new Promise((resolve, reject) => {
-          bandcamp.getAlbumInfo(album, function (error, albumInfo) {
-            if (error) {
-              console.log("ERROR: ", error);
-            } else {
-              resolve({
-                id: albumInfo.raw.current.id,
-                artist: albumInfo.artist,
-                name: albumInfo.title,
-                image: albumInfo.imageUrl,
-                tracks: albumInfo.tracks,
-              });
-            }
-          });
-        });
-        const albumData = {
-          name: await albumAllInfo.name,
-          url: album,
-          image: await albumAllInfo.image,
-          id: await albumAllInfo.id,
-          artist: await albumAllInfo.artist,
-          tracks: await albumAllInfo.tracks,
-        };
-        resolve(albumData);
-      }
-    });
-  });
+// const getOneAlbumData = async (album) => {
+//   const albumData = new Promise((resolve, reject) => {
+//     bandcamp.getAlbumProducts(album, async function (error, albumProducts) {
+//       if (error) {
+//         console.log("ERROR: ", error);
+//       } else {
+//         const albumAllInfo = await new Promise((resolve, reject) => {
+//           bandcamp.getAlbumInfo(album, function (error, albumInfo) {
+//             if (error) {
+//               console.log("ERROR: ", error);
+//             } else {
+//               resolve({
+//                 id: albumInfo.raw.current.id,
+//                 artist: albumInfo.artist,
+//                 name: albumInfo.title,
+//                 image: albumInfo.imageUrl,
+//                 tracks: albumInfo.tracks,
+//               });
+//             }
+//           });
+//         });
+//         const albumData = {
+//           name: await albumAllInfo.name,
+//           url: album,
+//           image: await albumAllInfo.image,
+//           id: await albumAllInfo.id,
+//           artist: await albumAllInfo.artist,
+//           tracks: await albumAllInfo.tracks,
+//         };
+//         resolve(albumData);
+//       }
+//     });
+//   });
+//   return albumData;
+// };
+
+const getOneAlbumData = async (albumUrl) => {
+  console.log("albumUrl", albumUrl);
+  const album = bcfetch.album;
+  const params = {
+    albumUrl,
+  };
+  const albumData = await album.getInfo(params);
+  console.log(albumData);
   return albumData;
 };
 
