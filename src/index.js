@@ -40,51 +40,12 @@ const getAlbumsUrls = async (artistUrl) => {
   return albumsUrls;
 };
 
-// const getOneAlbumData = async (album) => {
-//   const albumData = new Promise((resolve, reject) => {
-//     bandcamp.getAlbumProducts(album, async function (error, albumProducts) {
-//       if (error) {
-//         console.log("ERROR: ", error);
-//       } else {
-//         const albumAllInfo = await new Promise((resolve, reject) => {
-//           bandcamp.getAlbumInfo(album, function (error, albumInfo) {
-//             if (error) {
-//               console.log("ERROR: ", error);
-//             } else {
-//               resolve({
-//                 id: albumInfo.raw.current.id,
-//                 artist: albumInfo.artist,
-//                 name: albumInfo.title,
-//                 image: albumInfo.imageUrl,
-//                 tracks: albumInfo.tracks,
-//               });
-//             }
-//           });
-//         });
-//         const albumData = {
-//           name: await albumAllInfo.name,
-//           url: album,
-//           image: await albumAllInfo.image,
-//           id: await albumAllInfo.id,
-//           artist: await albumAllInfo.artist,
-//           tracks: await albumAllInfo.tracks,
-//         };
-//         resolve(albumData);
-//       }
-//     });
-//   });
-//   return albumData;
-// };
-
 const getOneAlbumData = async (albumUrl) => {
-  console.log("albumUrl", albumUrl);
   const album = bcfetch.album;
   const params = {
     albumUrl,
   };
-  const albumData = await album.getInfo(params);
-  console.log(albumData);
-  return albumData;
+  return await album.getInfo(params);
 };
 
 const getAllAlbumsData = async (albumsUrls) => {
