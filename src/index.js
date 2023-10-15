@@ -66,6 +66,7 @@ app.get("/artist", async (request, response) => {
 
   if (responseArray.length === 0) {
     response.send("Artist/Band not found. Please try again.");
+    return;
   }
 
   response.send(responseArray);
