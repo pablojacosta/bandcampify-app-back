@@ -65,7 +65,7 @@ app.get("/artist", async (request, response) => {
   const responseArray = await getArtistUrl(params);
 
   if (responseArray.length === 0) {
-    response.send("Artist/Band not found. Please try again");
+    response.send("Artist/Band not found. Please try again.");
   }
 
   response.send(responseArray);
