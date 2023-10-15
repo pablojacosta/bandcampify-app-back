@@ -44,6 +44,7 @@ const getOneAlbumData = async (albumUrl) => {
   const album = bcfetch.album;
   const params = {
     albumUrl,
+    includeRawData: true,
   };
   return await album.getInfo(params);
 };
