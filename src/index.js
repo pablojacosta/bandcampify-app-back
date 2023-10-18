@@ -18,7 +18,7 @@ const getArtistUrl = async (params) => {
         const artistResponse = await searchResults
           .filter((result) => result.type === "artist")
           .filter((result) =>
-            result.name.toLowerCase().includes(params.query.toLowerCase())
+            result.name.toLowerCase().localeCompare(params.query)
           );
 
         resolve(artistResponse);
