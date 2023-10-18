@@ -18,7 +18,7 @@ const getArtistUrl = async (params) => {
         const artistResponse = await searchResults
           .filter((result) => result.type === "artist")
           .filter((result) =>
-            result.name.toLowerCase().includes(params.query.toLowerCase())
+            result.name.toLowerCase().localeCompare(params.query)
           );
 
         resolve(artistResponse);
@@ -28,17 +28,17 @@ const getArtistUrl = async (params) => {
   return artistUrl;
 };
 
-const getAlbumsUrls = async (artistUrl) => {
-  const albumsUrls = new Promise((resolve, reject) => {
-    bandcamp.getAlbumUrls(artistUrl, async function (error, albumUrls) {
+const getArtistInfo = async (artistUrl) => {
+  const artistInfo = new Promise((resolve, reject) => {
+    bandcamp.getArtistInfo(artistUrl, function (error, artistInfo) {
       if (error) {
-        console.log("getAlbumsUrls ERROR: ", error);
+        console.log("getArtistInfo ERROR: ", error);
       } else {
-        resolve(albumUrls);
+        resolve(artistInfo);
       }
     });
   });
-  return albumsUrls;
+  return artistInfo;
 };
 
 const getOneAlbumData = async (albumUrl) => {
@@ -50,11 +50,12 @@ const getOneAlbumData = async (albumUrl) => {
   return await album.getInfo(params);
 };
 
-const getAllAlbumsData = async (albumsUrls) => {
-  const allAlbumsDataArray = await Promise.all(
-    albumsUrls.map((album) => getOneAlbumData(album))
-  );
-  return allAlbumsDataArray;
+const getTrackData = async (trackUrl) => {
+  const track = bcfetch.track;
+  const params = {
+    trackUrl,
+  };
+  return await track.getInfo(params);
 };
 
 app.get("/artist", async (request, response) => {
@@ -75,9 +76,26 @@ app.get("/artist", async (request, response) => {
 
 app.get("/albums", async (request, response) => {
   try {
-    const responseArray = await getAlbumsUrls(request.query.artistUrl);
-    const allAlbumsDataArray = await getAllAlbumsData(responseArray);
-    response.send(allAlbumsDataArray);
+    const artistInfo = await getArtistInfo(request.query.artistUrl);
+    response.send(artistInfo);
+  } catch (error) {
+    console.log("Error :", error);
+  }
+});
+
+app.get("/album", async (request, response) => {
+  try {
+    const albumInfo = await getOneAlbumData(request.query.albumUrl);
+    response.send(albumInfo);
+  } catch (error) {
+    console.log("Error :", error);
+  }
+});
+
+app.get("/track", async (request, response) => {
+  try {
+    const trackInfo = await getTrackData(request.query.trackUrl);
+    response.send(trackInfo);
   } catch (error) {
     console.log("Error :", error);
   }
