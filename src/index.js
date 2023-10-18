@@ -50,6 +50,14 @@ const getOneAlbumData = async (albumUrl) => {
   return await album.getInfo(params);
 };
 
+const getTrackData = async (trackUrl) => {
+  const track = bcfetch.track;
+  const params = {
+    trackUrl,
+  };
+  return await track.getInfo(params);
+};
+
 app.get("/artist", async (request, response) => {
   const params = {
     query: request.query.artist,
@@ -79,6 +87,15 @@ app.get("/album", async (request, response) => {
   try {
     const albumInfo = await getOneAlbumData(request.query.albumUrl);
     response.send(albumInfo);
+  } catch (error) {
+    console.log("Error :", error);
+  }
+});
+
+app.get("/track", async (request, response) => {
+  try {
+    const trackInfo = await getTrackData(request.query.trackUrl);
+    response.send(trackInfo);
   } catch (error) {
     console.log("Error :", error);
   }
