@@ -15,7 +15,7 @@ const getArtistUrl = async (params) => {
       if (error) {
         console.log("getArtistUrl ERROR: ", error);
       } else {
-        const artistResponse = await searchResults
+        const artistResponse = searchResults
           .filter((result) => result.type === "artist")
           .filter((result) => result.name.localeCompare(params.query));
 
