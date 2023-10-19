@@ -56,6 +56,10 @@ const getTrackData = async (trackUrl) => {
   return await track.getInfo(params);
 };
 
+app.get("/", async (request, response) => {
+  response.send("Hi! This is Bandcampify's backend. :)");
+});
+
 app.get("/artist", async (request, response) => {
   const params = {
     query: request.query.artist,
