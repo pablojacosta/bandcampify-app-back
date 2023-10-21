@@ -39,20 +39,20 @@ const localeIncludes = (
   return false;
 };
 
-const getArtistUrl = async (params) => {
+const getResults = async (params) => {
   const artistUrl = new Promise((resolve, reject) => {
     bandcamp.search(params, async function (error, searchResults) {
       if (error) {
-        console.log("getArtistUrl ERROR: ", error);
+        console.log("getResults ERROR: ", error);
       } else {
-        const artistResponse = searchResults.filter((result) =>
+        const results = searchResults.filter((result) =>
           localeIncludes(result.name, params.query, {
             usage: "search",
             sensitivity: "base",
           })
         );
 
-        resolve(artistResponse);
+        resolve(results);
       }
     });
   });
@@ -93,16 +93,16 @@ app.get("/", async (request, response) => {
   response.send("Hi! This is Bandcampify's backend. :)");
 });
 
-app.get("/artist", async (request, response) => {
+app.get("/search", async (request, response) => {
   const params = {
     query: request.query.artist,
     page: 1,
   };
 
-  const responseArray = await getArtistUrl(params);
+  const responseArray = await getResults(params);
 
   if (responseArray.length === 0) {
-    response.send("Artist/Band not found. Please try again.");
+    response.send("Sorry. No results found. Please, try again.");
     return;
   }
 
