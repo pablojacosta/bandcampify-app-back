@@ -45,14 +45,12 @@ const getArtistUrl = async (params) => {
       if (error) {
         console.log("getArtistUrl ERROR: ", error);
       } else {
-        const artistResponse = searchResults
-          .filter((result) => result.type === "artist")
-          .filter((result) =>
-            localeIncludes(result.name, params.query, {
-              usage: "search",
-              sensitivity: "base",
-            })
-          );
+        const artistResponse = searchResults.filter((result) =>
+          localeIncludes(result.name, params.query, {
+            usage: "search",
+            sensitivity: "base",
+          })
+        );
 
         resolve(artistResponse);
       }
