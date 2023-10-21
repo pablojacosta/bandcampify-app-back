@@ -51,7 +51,6 @@ const getResults = async (params) => {
             sensitivity: "base",
           })
         );
-
         resolve(results);
       }
     });
@@ -89,6 +88,15 @@ const getTrackData = async (trackUrl) => {
   return await track.getInfo(params);
 };
 
+const getArtist = async (artistUrl) => {
+  const band = bcfetch.band;
+  const params = {
+    bandUrl: artistUrl,
+  };
+
+  return await band.getInfo(params);
+};
+
 app.get("/", async (request, response) => {
   response.send("Hi! This is Bandcampify's backend. :)");
 });
@@ -107,6 +115,15 @@ app.get("/search", async (request, response) => {
   }
 
   response.send(responseArray);
+});
+
+app.get("/artist", async (request, response) => {
+  try {
+    const artist = await getArtist(request.query.artistUrl);
+    response.send(artist);
+  } catch (error) {
+    console.log("Error :", error);
+  }
 });
 
 app.get("/albums", async (request, response) => {
