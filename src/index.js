@@ -40,7 +40,7 @@ const localeIncludes = (
 };
 
 const getResults = async (params) => {
-  const artistUrl = new Promise((resolve, reject) => {
+  const resultsData = new Promise((resolve, reject) => {
     bandcamp.search(params, async function (error, searchResults) {
       if (error) {
         console.log("getResults ERROR: ", error);
@@ -56,7 +56,7 @@ const getResults = async (params) => {
       }
     });
   });
-  return artistUrl;
+  return resultsData;
 };
 
 const getArtistInfo = async (artistUrl) => {
