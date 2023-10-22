@@ -45,13 +45,7 @@ const getResults = async (params) => {
       if (error) {
         console.log("getResults ERROR: ", error);
       } else {
-        const results = searchResults.filter((result) =>
-          localeIncludes(result.name, params.query, {
-            usage: "search",
-            sensitivity: "base",
-          })
-        );
-        resolve(results);
+        resolve(searchResults);
       }
     });
   });
