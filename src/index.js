@@ -39,26 +39,17 @@ const localeIncludes = (
   return false;
 };
 
-const getArtistUrl = async (params) => {
-  const artistUrl = new Promise((resolve, reject) => {
+const getResults = async (params) => {
+  const resultsData = new Promise((resolve, reject) => {
     bandcamp.search(params, async function (error, searchResults) {
       if (error) {
-        console.log("getArtistUrl ERROR: ", error);
+        console.log("getResults ERROR: ", error);
       } else {
-        const artistResponse = searchResults
-          .filter((result) => result.type === "artist")
-          .filter((result) =>
-            localeIncludes(result.name, params.query, {
-              usage: "search",
-              sensitivity: "base",
-            })
-          );
-
-        resolve(artistResponse);
+        resolve(searchResults);
       }
     });
   });
-  return artistUrl;
+  return resultsData;
 };
 
 const getArtistInfo = async (artistUrl) => {
@@ -91,24 +82,47 @@ const getTrackData = async (trackUrl) => {
   return await track.getInfo(params);
 };
 
+const getArtist = async (artistUrl) => {
+  const band = bcfetch.band;
+  const params = {
+    bandUrl: artistUrl,
+  };
+
+  return await band.getInfo(params);
+};
+
 app.get("/", async (request, response) => {
   response.send("Hi! This is Bandcampify's backend. :)");
 });
 
-app.get("/artist", async (request, response) => {
-  const params = {
-    query: request.query.artist,
-    page: 1,
-  };
+app.get("/search", async (request, response) => {
+  let fullResponse = [];
 
-  const responseArray = await getArtistUrl(params);
+  for (let i = 1; i < 8; i++) {
+    const params = {
+      query: request.query.artist,
+      page: i,
+    };
 
-  if (responseArray.length === 0) {
-    response.send("Artist/Band not found. Please try again.");
+    const responseArray = await getResults(params);
+    fullResponse.push(...responseArray);
+  }
+
+  if (fullResponse.length === 0) {
+    response.send("Sorry. No results found. Please, try again.");
     return;
   }
 
-  response.send(responseArray);
+  response.send(fullResponse);
+});
+
+app.get("/artist", async (request, response) => {
+  try {
+    const artist = await getArtist(request.query.artistUrl);
+    response.send(artist);
+  } catch (error) {
+    console.log("Error :", error);
+  }
 });
 
 app.get("/albums", async (request, response) => {
