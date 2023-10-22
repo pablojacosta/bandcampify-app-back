@@ -96,19 +96,24 @@ app.get("/", async (request, response) => {
 });
 
 app.get("/search", async (request, response) => {
-  const params = {
-    query: request.query.artist,
-    page: 1,
-  };
+  let fullResponse = [];
 
-  const responseArray = await getResults(params);
+  for (let i = 1; i < 8; i++) {
+    const params = {
+      query: request.query.artist,
+      page: i,
+    };
 
-  if (responseArray.length === 0) {
+    const responseArray = await getResults(params);
+    fullResponse.push(...responseArray);
+  }
+
+  if (fullResponse.length === 0) {
     response.send("Sorry. No results found. Please, try again.");
     return;
   }
 
-  response.send(responseArray);
+  response.send(fullResponse);
 });
 
 app.get("/artist", async (request, response) => {
